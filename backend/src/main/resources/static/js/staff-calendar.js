@@ -30,7 +30,9 @@ function renderList(schedules) {
           <small class="text-muted">${formatDateTime(item.fechaHoraInicio)} · ${item.sala}</small>
         </div>
         <div class="d-flex align-items-center gap-3">
-          <button class="btn btn-sm btn-outline-light" data-action="asistencia" data-id="${item.id}">Ver asistencia</button>
+          <button class="btn btn-sm btn-outline-light" data-action="asistencia" data-id="${item.id}">
+            Ver asistencia
+          </button>
         </div>
       </div>
     `
@@ -39,7 +41,9 @@ function renderList(schedules) {
 }
 
 async function loadAsistencia(horarioId) {
-  const response = await authFetch(`/api/reservas/staff/horarios/${horarioId}/asistencia`);
+  const response = await authFetch(
+    `/api/reservas/staff/horarios/${horarioId}/asistencia`
+  );
   if (!response.ok) return null;
   return await response.json();
 }
@@ -47,7 +51,8 @@ async function loadAsistencia(horarioId) {
 function renderAsistencia(asistencia) {
   if (!staffAttendanceList) return;
   if (!asistencia || asistencia.length === 0) {
-    staffAttendanceList.innerHTML = '<p class="text-muted mb-0">Sin asistentes registrados.</p>';
+    staffAttendanceList.innerHTML =
+      '<p class="text-muted mb-0">Sin asistentes registrados.</p>';
     return;
   }
   staffAttendanceList.innerHTML = asistencia
@@ -58,7 +63,7 @@ function renderAsistencia(asistencia) {
           <strong>${item.nombre}</strong>
           <div class="text-muted small">${item.email}</div>
         </div>
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
           <span class="tag">${item.telefono || 'Sin teléfono'}</span>
           <button class="btn btn-sm ${item.asistenciaConfirmada ? 'btn-accent' : 'btn-outline-light'}"
             data-action="toggle-asistencia" data-id="${item.reservaId}" data-value="${item.asistenciaConfirmada}">
@@ -77,8 +82,9 @@ async function init() {
   renderList(schedules);
 
   if (calendarEl) {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
     const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
+      initialView: isMobile ? 'listWeek' : 'dayGridMonth',
       height: 'auto',
       locale: 'es',
       firstDay: 1,
@@ -90,12 +96,13 @@ async function init() {
         list: 'Lista',
       },
       headerToolbar: {
-        left: 'prev,next today',
+        left: isMobile ? 'prev,next' : 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay',
+        right: isMobile ? 'listWeek,dayGridMonth' : 'dayGridMonth,timeGridWeek,timeGridDay',
       },
       nowIndicator: true,
       eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+      dayMaxEventRows: isMobile ? 2 : true,
       events: schedules.map(item => ({
         id: String(item.id),
         title: `${item.claseNombre} · ${item.sala}`,
@@ -129,10 +136,13 @@ async function init() {
     if (!btn) return;
     const reservaId = btn.dataset.id;
     const current = btn.dataset.value === 'true';
-    const response = await authFetch(`/api/reservas/staff/reservas/${reservaId}/asistencia`, {
-      method: 'PATCH',
-      body: JSON.stringify({ asistenciaConfirmada: !current }),
-    });
+    const response = await authFetch(
+      `/api/reservas/staff/reservas/${reservaId}/asistencia`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ asistenciaConfirmada: !current }),
+      }
+    );
     if (!response.ok) return;
     const updated = await response.json();
     btn.dataset.value = String(updated.asistenciaConfirmada);

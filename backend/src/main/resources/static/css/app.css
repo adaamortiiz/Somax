@@ -40,22 +40,62 @@ body {
 
 .page-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .auth-main {
-  flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 2.75rem 0 2rem;
+  flex: 1;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.25rem 0 2.5rem;
+}
+
+.auth-main > .container {
+  width: 100%;
+}
+
+@media (max-width: 992px) {
+  .auth-main {
+    padding: 0.85rem 0 2rem;
+  }
+}
+
+.auth-main .row {
+  width: 100%;
+}
+
+.auth-main .glass-card {
+  margin-top: 0.5rem;
+}
+
+.auth-main .col-lg-5,
+.auth-main .col-lg-6 {
+  max-width: 100%;
 }
 
 p,
 small,
 .text-muted {
   color: var(--muted) !important;
+}
+
+body:not(.light) .form-label,
+body:not(.light) .form-text,
+body:not(.light) .input-group-text,
+body:not(.light) .form-check-label,
+body:not(.light) .form-select,
+body:not(.light) .form-control,
+body:not(.light) .btn-outline-light {
+  color: var(--text);
+}
+
+body:not(.light) .form-text {
+  color: rgba(244, 246, 249, 0.78) !important;
+  opacity: 1;
+}
+
+body:not(.light) .form-control::placeholder {
+  color: rgba(244, 246, 249, 0.72);
 }
 
 .text-white {
@@ -86,6 +126,15 @@ textarea.form-control:focus {
 
 .form-check-label {
   color: var(--muted);
+}
+
+body.light .form-label,
+body.light .form-text,
+body.light .form-check-label,
+body.light .input-group-text,
+body.light .form-control,
+body.light .form-select {
+  color: var(--text);
 }
 
 .table {
@@ -154,27 +203,6 @@ a {
   justify-content: center;
   gap: 0.5rem;
   white-space: nowrap;
-}
-
-.theme-toggle {
-  width: 38px;
-  height: 38px;
-  padding: 0 !important;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: var(--text) !important;
-}
-.theme-toggle:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
-}
-.theme-toggle:focus {
-  outline: none;
-  box-shadow: 0 0 0 0.15rem rgba(47, 128, 255, 0.18) !important;
 }
 
 .btn-accent {
@@ -250,6 +278,51 @@ a {
     border-color 0.3s ease;
 }
 
+.class-image {
+  width: 100%;
+  height: 170px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+}
+.class-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.class-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(244, 246, 249, 0.7);
+  background:
+    radial-gradient(circle at top, rgba(47, 128, 255, 0.18), transparent 55%),
+    rgba(255, 255, 255, 0.02);
+  font-size: 1.6rem;
+}
+
+@media (max-width: 768px) {
+  /* FullCalendar mobile polish */
+  .fc .fc-toolbar {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .fc .fc-toolbar-title {
+    font-size: 1.05rem;
+  }
+  .fc .fc-button {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.85rem;
+  }
+  .calendar-card {
+    padding: 1rem;
+  }
+}
+
 .feature-card:hover {
   transform: translateY(-6px);
   border-color: rgba(47, 128, 255, 0.5);
@@ -269,6 +342,29 @@ a {
   min-height: 100vh;
 }
 
+/* Mobile sidebar (hamburger) */
+.mobile-nav-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  border-radius: 12px;
+}
+.mobile-nav-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1040;
+}
+
 .sidebar {
   background: var(--surface);
   border-right: 1px solid var(--border);
@@ -276,6 +372,29 @@ a {
   position: sticky;
   top: 0;
   height: 100vh;
+}
+
+@media (max-width: 992px) {
+  .dashboard-shell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 86vw;
+    transform: translateX(-110%);
+    transition: transform 0.25s ease;
+    z-index: 1050;
+  }
+  .dashboard-shell.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+  .dashboard-shell.sidebar-open .sidebar-backdrop {
+    display: block;
+  }
 }
 
 .sidebar a {
@@ -308,6 +427,29 @@ a {
   min-height: 100vh;
 }
 
+.app-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  background: rgba(11, 13, 16, 0.65);
+  backdrop-filter: blur(16px);
+  padding: 1.1rem 0;
+}
+
+.app-footer-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.app-footer-links a {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.app-footer-links a:hover {
+  color: var(--text);
+}
+
 .stat-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -321,50 +463,6 @@ a {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 1.5rem;
-}
-
-/* FullCalendar theme glue */
-.fc {
-  --fc-page-bg-color: transparent;
-  --fc-border-color: var(--border);
-  --fc-today-bg-color: rgba(47, 128, 255, 0.12);
-  --fc-neutral-bg-color: transparent;
-  --fc-list-event-hover-bg-color: rgba(47, 128, 255, 0.08);
-  color: var(--text);
-}
-
-.fc .fc-toolbar-title {
-  font-family: 'Sora', sans-serif;
-  letter-spacing: 0.02em;
-}
-
-.fc .fc-button {
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text);
-}
-
-.fc .fc-button:hover {
-  background: rgba(47, 128, 255, 0.14);
-}
-
-.fc .fc-button-primary:not(:disabled).fc-button-active,
-.fc .fc-button-primary:not(:disabled):active {
-  background: rgba(47, 128, 255, 0.22);
-  border-color: rgba(47, 128, 255, 0.35);
-}
-
-.fc .fc-daygrid-day-number,
-.fc .fc-col-header-cell-cushion {
-  color: var(--muted);
-  text-decoration: none;
-}
-
-.fc .fc-daygrid-event {
-  border-radius: 10px;
-  padding: 2px 6px;
-  font-weight: 600;
 }
 
 .calendar-item {
@@ -482,6 +580,10 @@ body.light .navbar {
   background: rgba(255, 255, 255, 0.8);
 }
 
+body.light .app-footer {
+  background: rgba(255, 255, 255, 0.7);
+}
+
 body.light .btn-outline-light {
   color: var(--text);
   border-color: var(--input-border);
@@ -509,6 +611,7 @@ body.light .calendar-card,
 body.light .chat-panel,
 body.light .stat-card,
 body.light .sidebar,
+body.light .app-footer,
 body.light .calendar-item,
 body.light .chat-bubble {
   background: var(--surface);

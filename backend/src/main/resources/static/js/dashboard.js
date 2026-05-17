@@ -248,9 +248,17 @@ async function loadClasses() {
   const classes = await response.json();
   classList.innerHTML = classes
     .map(clase => {
+      const imageUrl = clase.imagenUrl && String(clase.imagenUrl).trim();
       return `
             <div class="col-md-4">
                 <div class="glass-card h-100">
+                    <div class="class-image mb-3">
+                      ${
+                        imageUrl
+                          ? `<img src="${imageUrl}" alt="${clase.nombre}" loading="lazy" onerror="this.style.display='none'" />`
+                          : `<div class="class-image-placeholder"><i class="fa-solid fa-dumbbell"></i></div>`
+                      }
+                    </div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h5 class="mb-0">${clase.nombre}</h5>
                         <span class="tag">${clase.nivel}</span>

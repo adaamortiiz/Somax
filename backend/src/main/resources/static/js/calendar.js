@@ -18,8 +18,9 @@ async function loadProfile() {
   const profile = await response.json();
   if (userName) userName.textContent = profile.nombre;
   if (adminLink && profile.rol === 'ADMIN') adminLink.classList.remove('d-none');
-  if (staffLink && (profile.rol === 'STAFF' || profile.rol === 'ADMIN'))
+  if (staffLink && (profile.rol === 'STAFF' || profile.rol === 'ADMIN')) {
     staffLink.classList.remove('d-none');
+  }
   return profile;
 }
 
@@ -47,7 +48,9 @@ async function reserveHorario(horarioId) {
 }
 
 async function cancelReserva(reservaId) {
-  const response = await authFetch(`/api/reservas/${reservaId}`, { method: 'DELETE' });
+  const response = await authFetch(`/api/reservas/${reservaId}`, {
+    method: 'DELETE',
+  });
   return response.ok;
 }
 
@@ -59,11 +62,12 @@ function buildEventTitle(item, hasReserva) {
 async function initCalendar() {
   if (!calendarEl) return;
 
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
   const profile = await loadProfile();
   const { schedules, reservaByHorarioId } = await loadData();
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
+    initialView: isMobile ? 'listWeek' : 'dayGridMonth',
     height: 'auto',
     locale: 'es',
     firstDay: 1,
@@ -75,12 +79,13 @@ async function initCalendar() {
       list: 'Lista',
     },
     headerToolbar: {
-      left: 'prev,next today',
+      left: isMobile ? 'prev,next' : 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay',
+      right: isMobile ? 'listWeek,dayGridMonth' : 'dayGridMonth,timeGridWeek,timeGridDay',
     },
     nowIndicator: true,
     eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+    dayMaxEventRows: isMobile ? 2 : true,
     events: schedules.map(item => {
       const reserva = reservaByHorarioId.get(String(item.id));
       const hasReserva = !!reserva;
@@ -93,12 +98,7 @@ async function initCalendar() {
         backgroundColor: color,
         borderColor: color,
         textColor: '#0b0d10',
-        extendedProps: {
-          item,
-          reserva,
-          hasReserva,
-          role: profile?.rol,
-        },
+        extendedProps: { item, reserva, hasReserva, role: profile?.rol },
       };
     }),
     eventClick: async info => {
@@ -119,7 +119,10 @@ async function initCalendar() {
         const cancelled = await cancelReserva(reserva.id);
         if (!cancelled) return;
       } else {
-        const label = item.estadoAforo === 'COMPLETO' ? 'Entrar en lista de espera' : 'Reservar';
+        const label =
+          item.estadoAforo === 'COMPLETO'
+            ? 'Entrar en lista de espera'
+            : 'Reservar';
         const ok = confirm(
           `${item.claseNombre}\n${new Date(item.fechaHoraInicio).toLocaleString('es-ES')}\nSala: ${item.sala}\n\n${label}?`
         );
@@ -128,12 +131,10 @@ async function initCalendar() {
         if (!booked) return;
       }
 
-      // Refresco completo de eventos tras reservar/cancelar
       const fresh = await loadData();
-      const freshReservaByHorarioId = fresh.reservaByHorarioId;
       calendar.getEvents().forEach(e => e.remove());
       fresh.schedules.forEach(s => {
-        const r = freshReservaByHorarioId.get(String(s.id));
+        const r = fresh.reservaByHorarioId.get(String(s.id));
         const has = !!r;
         const color = colorForSchedule(s, has);
         calendar.addEvent({
@@ -143,7 +144,12 @@ async function initCalendar() {
           backgroundColor: color,
           borderColor: color,
           textColor: '#0b0d10',
-          extendedProps: { item: s, reserva: r, hasReserva: has, role: profile?.rol },
+          extendedProps: {
+            item: s,
+            reserva: r,
+            hasReserva: has,
+            role: profile?.rol,
+          },
         });
       });
     },
@@ -154,10 +160,9 @@ async function initCalendar() {
   // Refresco suave para “tiempo real”
   setInterval(async () => {
     const fresh = await loadData();
-    const freshReservaByHorarioId = fresh.reservaByHorarioId;
     calendar.getEvents().forEach(e => e.remove());
     fresh.schedules.forEach(s => {
-      const r = freshReservaByHorarioId.get(String(s.id));
+      const r = fresh.reservaByHorarioId.get(String(s.id));
       const has = !!r;
       const color = colorForSchedule(s, has);
       calendar.addEvent({

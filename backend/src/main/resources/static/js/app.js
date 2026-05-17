@@ -166,4 +166,19 @@ document.addEventListener('DOMContentLoaded', function () {
   enforceRouteByRole();
   enhanceBranding();
   enhanceSidebarIcons();
+
+  // Mobile sidebar toggle for dashboard-shell layouts
+  document.addEventListener('click', event => {
+    const shell = document.querySelector('.dashboard-shell');
+    if (!shell) {
+      return;
+    }
+    if (event.target.closest('[data-sidebar-toggle]')) {
+      shell.classList.toggle('sidebar-open');
+      return;
+    }
+    if (event.target.closest('.sidebar-backdrop')) {
+      shell.classList.remove('sidebar-open');
+    }
+  });
 });

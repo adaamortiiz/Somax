@@ -37,10 +37,21 @@
         <a id="adminLink" class="d-none" href="/admin">Administración</a>
         <a href="#" onclick="logout()">Cerrar sesión</a>
       </aside>
+      <div class="sidebar-backdrop" aria-hidden="true"></div>
       <main class="main-panel">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <h2 class="mb-1">Hola, <span id="userName">Socio</span></h2>
+            <div class="d-flex align-items-center gap-2">
+              <button
+                class="mobile-nav-toggle"
+                type="button"
+                data-sidebar-toggle
+                aria-label="Abrir menú"
+              >
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <h2 class="mb-1">Hola, <span id="userName">Socio</span></h2>
+            </div>
           </div>
           <div>
             <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar tema"></button>
