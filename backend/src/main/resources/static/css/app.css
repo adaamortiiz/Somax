@@ -153,6 +153,25 @@ body.light .form-select {
   font-weight: 600;
 }
 
+/* Admin editable tables */
+.admin-table td {
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+}
+.admin-table .form-control,
+.admin-table .form-select {
+  border-radius: 12px;
+}
+.admin-table .form-control.form-control-sm,
+.admin-table .form-select.form-select-sm {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.admin-table .btn.btn-sm {
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+}
+
 .btn-outline-light {
   color: var(--text);
   border-color: var(--input-border);
@@ -416,6 +435,8 @@ a {
     transform: translateX(-110%);
     transition: transform 0.25s ease;
     z-index: 1050;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    overflow-y: auto;
   }
   .dashboard-shell.sidebar-open .sidebar {
     transform: translateX(0);
@@ -455,28 +476,7 @@ a {
   min-height: 100vh;
 }
 
-.app-footer {
-  margin-top: auto;
-  border-top: 1px solid var(--border);
-  background: rgba(11, 13, 16, 0.65);
-  backdrop-filter: blur(16px);
-  padding: 1.1rem 0;
-}
-
-.app-footer-links {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.app-footer-links a {
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-
-.app-footer-links a:hover {
-  color: var(--text);
-}
+/* Footer removed by requirement */
 
 .stat-card {
   background: var(--surface);
@@ -647,10 +647,6 @@ body.light .navbar {
   background: rgba(255, 255, 255, 0.8);
 }
 
-body.light .app-footer {
-  background: rgba(255, 255, 255, 0.7);
-}
-
 body.light .btn-outline-light {
   color: var(--text);
   border-color: var(--input-border);
@@ -678,7 +674,6 @@ body.light .calendar-card,
 body.light .chat-panel,
 body.light .stat-card,
 body.light .sidebar,
-body.light .app-footer,
 body.light .calendar-item,
 body.light .chat-bubble {
   background: var(--surface);

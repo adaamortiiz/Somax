@@ -169,15 +169,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Mobile sidebar toggle for dashboard-shell layouts
   document.addEventListener('click', event => {
-    const shell = document.querySelector('.dashboard-shell');
-    if (!shell) {
-      return;
-    }
-    if (event.target.closest('[data-sidebar-toggle]')) {
+    const toggle = event.target.closest('[data-sidebar-toggle]');
+    const backdrop = event.target.closest('.sidebar-backdrop');
+    const sidebarLink = event.target.closest('.sidebar a[href]');
+
+    const shell =
+      toggle?.closest('.dashboard-shell') ||
+      backdrop?.closest('.dashboard-shell') ||
+      sidebarLink?.closest('.dashboard-shell') ||
+      document.querySelector('.dashboard-shell');
+
+    if (!shell) return;
+
+    if (toggle) {
       shell.classList.toggle('sidebar-open');
       return;
     }
-    if (event.target.closest('.sidebar-backdrop')) {
+
+    if (backdrop || sidebarLink) {
       shell.classList.remove('sidebar-open');
     }
   });

@@ -10,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.somax.model.*;
 import com.somax.repository.ClaseDirigidaRepository;
 import com.somax.repository.HorarioRepository;
+import com.somax.repository.NotificacionRepository;
 import com.somax.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 @Component
 @RequiredArgsConstructor
@@ -19,11 +21,18 @@ public class DataInitializer implements CommandLineRunner {
         private final UsuarioRepository usuarioRepository;
         private final ClaseDirigidaRepository claseRepository;
         private final HorarioRepository horarioRepository;
+        private final NotificacionRepository notificacionRepository;
         private final PasswordEncoder passwordEncoder;
+
+        @Value("${app.demo.clear-notifications:true}")
+        private boolean clearNotificationsOnStartup;
 
         @Override
         @Transactional
         public void run(String... args) {
+                if (clearNotificationsOnStartup) {
+                        notificacionRepository.deleteAllInBatch();
+                }
                 ensureUser("Admin Somax", "admin@somax.com", "600000001", Role.ADMIN);
                 Usuario staff = ensureUser("Laura Monitor", "staff@somax.com", "600000002",
                                 Role.STAFF);
