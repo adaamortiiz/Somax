@@ -172,6 +172,10 @@ body.light .form-select {
   padding: 0.35rem 0.85rem;
 }
 
+body.light .admin-table td {
+  color: var(--text);
+}
+
 .btn-outline-light {
   color: var(--text);
   border-color: var(--input-border);
@@ -614,10 +618,6 @@ a {
 @media (max-width: 991px) {
   .dashboard-shell {
     grid-template-columns: 1fr;
-  }
-
-  .sidebar {
-    display: none;
   }
 
   .main-panel {
