@@ -205,6 +205,28 @@ a {
   white-space: nowrap;
 }
 
+/* Icon-only theme toggle (top-right) */
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.theme-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.15rem rgba(47, 128, 255, 0.18);
+}
+
 .btn-accent {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   border: none;
@@ -352,6 +374,7 @@ a {
   background: transparent;
   color: var(--text);
   border-radius: 12px;
+  cursor: pointer;
 }
 .mobile-nav-toggle:hover {
   background: rgba(255, 255, 255, 0.06);
@@ -377,6 +400,11 @@ a {
 @media (max-width: 992px) {
   .dashboard-shell {
     grid-template-columns: 1fr;
+  }
+  .mobile-nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
   .sidebar {
     position: fixed;
@@ -463,6 +491,45 @@ a {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 1.5rem;
+}
+
+/* FullCalendar theme */
+.fc {
+  --fc-border-color: var(--border);
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: rgba(255, 255, 255, 0.02);
+  --fc-today-bg-color: rgba(47, 128, 255, 0.08);
+  color: var(--text);
+}
+.fc .fc-toolbar-title {
+  font-family: 'Sora', sans-serif;
+  letter-spacing: -0.02em;
+}
+.fc .fc-button {
+  border-radius: 12px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--surface-2) !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+.fc .fc-button:hover {
+  background: rgba(47, 128, 255, 0.14) !important;
+  border-color: rgba(47, 128, 255, 0.45) !important;
+}
+.fc .fc-button:disabled {
+  opacity: 0.55;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  background: rgba(47, 128, 255, 0.2) !important;
+  border-color: rgba(47, 128, 255, 0.7) !important;
+}
+.fc .fc-daygrid-event {
+  border-radius: 10px;
+  border: none;
+}
+.fc .fc-list-event:hover td {
+  background: rgba(47, 128, 255, 0.08);
 }
 
 .calendar-item {
