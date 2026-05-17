@@ -1,0 +1,164 @@
+﻿<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Somax | Plataforma Fitness Inteligente</title>
+    <link rel="icon" type="image/png" href="/img/favicon.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    /><link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <nav class="navbar navbar-expand-lg">
+        <div class="container">
+          <a class="navbar-brand" href="/">
+            <img
+              id="somax-logo"
+              class="somax-logo"
+              src="/img/logo-blanco-sin-bg.png"
+              alt="Somax"
+            />
+          </a>
+          <div class="d-flex gap-2">
+            <a class="btn btn-outline-light" href="/login">
+              <i class="fa-solid fa-right-to-bracket"></i>
+              <span>Acceder</span>
+            </a>
+            <a class="btn btn-accent" href="/registro">
+              <i class="fa-solid fa-user-plus"></i>
+              <span>Quiero unirme</span>
+            </a>
+            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar tema"></button>
+          </div>
+        </div>
+      </nav>
+
+      <main class="page-content">
+        <header class="hero">
+          <div class="container">
+            <div class="row align-items-center g-4">
+              <div class="col-lg-6">
+                <div class="hero-badge">IA Fitness 24/7 · Reservas inteligentes</div>
+                <h1 class="mt-4">
+                  Gestiona tus clases dirigidas con una experiencia premium.
+                </h1>
+                <p class="text-muted fs-5">
+                  Somax digitaliza las reservas, controla el aforo en tiempo real y
+                  ofrece asesoramiento personalizado con IA para gimnasios modernos.
+                </p>
+                <div class="d-flex gap-3 mt-4">
+                  <a class="btn btn-accent" href="/registro">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Crear cuenta</span>
+                  </a>
+                  <a class="btn btn-outline-light" href="#horarios">
+                    <i class="fa-regular fa-calendar-days"></i>
+                    <span>Ver horarios</span>
+                  </a>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="hero-card fade-up">
+                  <h4 class="mb-3">Todo lo que necesitas en un solo panel</h4>
+                  <ul class="list-unstyled text-muted mb-0">
+                    <li class="mb-2">
+                      <i class="fa-solid fa-check me-2"></i>Reservas instantáneas con
+                      lista de espera.
+                    </li>
+                    <li class="mb-2">
+                      <i class="fa-solid fa-check me-2"></i>Calendario visual con aforo
+                      en tiempo real.
+                    </li>
+                    <li class="mb-2">
+                      <i class="fa-solid fa-check me-2"></i>Chat IA para rutinas y
+                      nutrición.
+                    </li>
+                    <li>
+                      <i class="fa-solid fa-check me-2"></i>Notificaciones por email y
+                      panel.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <section class="py-5" id="horarios">
+          <div class="container">
+            <div class="section-title mb-4">
+              <span></span>
+              <h2 class="mb-0">Horarios generales</h2>
+            </div>
+            <div class="row g-4">
+              <div class="col-md-4">
+                <div class="glass-card feature-card">
+                  <h5>Zumba</h5>
+                  <p class="text-muted">Lunes y miércoles · 10:00</p>
+                  <span class="tag">Aforo 16</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="glass-card feature-card">
+                  <h5>Pilates</h5>
+                  <p class="text-muted">Martes y jueves · 18:00</p>
+                  <span class="tag">Aforo 12</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="glass-card feature-card">
+                  <h5>Spinning</h5>
+                  <p class="text-muted">Viernes · 09:30</p>
+                  <span class="tag">Aforo 20</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="py-5">
+          <div class="container">
+            <div class="row g-4">
+              <div class="col-lg-4">
+                <div class="glass-card feature-card h-100">
+                  <h5>
+                    <i class="fa-solid fa-calendar-check me-2"></i>Reservas sin fricciones
+                  </h5>
+                  <p class="text-muted mb-0">
+                    Bloqueo de aforo, lista de espera ordenada y promociones instantáneas.
+                  </p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="glass-card feature-card h-100">
+                  <h5><i class="fa-solid fa-robot me-2"></i>IA personalizada</h5>
+                  <p class="text-muted mb-0">
+                    Consulta planes de entrenamiento y nutrición sin saturar al staff.
+                  </p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="glass-card feature-card h-100">
+                  <h5><i class="fa-solid fa-mobile-screen me-2"></i>Panel responsive</h5>
+                  <p class="text-muted mb-0">
+                    Accede a tus horarios y reservas desde cualquier dispositivo.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/theme.js"></script>
+  </body>
+</html>

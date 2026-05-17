@@ -1,0 +1,5 @@
+package com.somax.model;
+
+public enum NotificacionTipo {
+    RESERVA_CONFIRMADA, LISTA_ESPERA, PROMOCION_LISTA_ESPERA, RESERVA_CANCELADA, RECUPERACION_PASSWORD
+}
