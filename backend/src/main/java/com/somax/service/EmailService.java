@@ -32,6 +32,10 @@ public class EmailService {
      */
     public void sendEmail(String to, String subject, String htmlBody) {
         try {
+            if (to == null || to.isBlank()) {
+                log.warn("Email no enviado: destinatario vacío");
+                return;
+            }
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
             helper.setTo(to);
@@ -39,9 +43,9 @@ public class EmailService {
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
             mailSender.send(message);
+            log.info("Email SMTP enviado a {} (asunto: {})", to, subject);
         } catch (Exception ex) {
             log.error("Error enviando email SMTP a {}", to, ex);
         }
     }
 }
-
