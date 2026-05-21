@@ -1,6 +1,7 @@
 package com.somax.service;
 
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.core.io.ClassPathResource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +38,20 @@ public class EmailService {
                 return;
             }
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(to);
             helper.setFrom(fromEmail, fromName);
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
+
+            // Inline logo (cid:somaxLogo) for corporate templates
+            try {
+                helper.addInline("somaxLogo",
+                        new ClassPathResource("static/img/logo-blanco-sin-bg.png"));
+            } catch (Exception ex) {
+                log.warn("No se pudo adjuntar el logo inline para email", ex);
+            }
+
             mailSender.send(message);
             log.info("Email SMTP enviado a {} (asunto: {})", to, subject);
         } catch (Exception ex) {
