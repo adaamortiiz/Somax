@@ -6,17 +6,27 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Configuration
 public class MailConfig {
+    private static final Logger log = LoggerFactory.getLogger(MailConfig.class);
 
     @Bean
     public JavaMailSender javaMailSender(Environment env) {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost(env.getProperty("spring.mail.host", "smtp.gmail.com"));
         sender.setPort(Integer.parseInt(env.getProperty("spring.mail.port", "587")));
-        sender.setUsername(env.getProperty("spring.mail.username", ""));
-        sender.setPassword(env.getProperty("spring.mail.password", ""));
+        String username = env.getProperty("spring.mail.username", "");
+        String password = env.getProperty("spring.mail.password", "");
+        sender.setUsername(username);
+        sender.setPassword(password);
+
+        if (username != null && !username.isBlank() && (password == null || password.isBlank())) {
+            log.warn(
+                    "SMTP configurado con usuario pero sin password. Define SMTP_PASS (contraseña de aplicación de Gmail) para habilitar el envío.");
+        }
 
         Properties props = sender.getJavaMailProperties();
         props.put("mail.smtp.auth", env.getProperty("spring.mail.properties.mail.smtp.auth", "true"));
