@@ -39,7 +39,7 @@ public class PasswordResetService {
                 .expiraEn(LocalDateTime.now().plusMinutes(30)).usado(false).build();
         tokenRepository.save(resetToken);
 
-        String enlace = frontendBaseUrl + "/reset-password?token=" + token;
+        String enlace = normalizeBaseUrl(frontendBaseUrl) + "/reset-password?token=" + token;
 
         String mensaje = "Has solicitado restablecer tu contraseña. Usa este enlace: " + enlace;
         // Store notification
@@ -70,5 +70,16 @@ public class PasswordResetService {
         Usuario usuario = resetToken.getUsuario();
         usuario.setPassword(passwordEncoder.encode(nuevaPassword));
         resetToken.setUsado(true);
+    }
+
+    private static String normalizeBaseUrl(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        String trimmed = value.trim();
+        while (trimmed.endsWith("/")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed;
     }
 }

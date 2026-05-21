@@ -23,7 +23,10 @@ public class NotificationService {
                 Notificacion.builder().usuario(usuario).tipo(tipo).mensaje(mensaje).build();
         notificacionRepository.save(notificacion);
 
-        if (usuario.getPreferencias() != null && usuario.getPreferencias().isAvisos()) {
+        // Password reset has its own dedicated corporate email with CTA button (avoid duplicates).
+        if (tipo != NotificacionTipo.RECUPERACION_PASSWORD
+                && usuario.getPreferencias() != null
+                && usuario.getPreferencias().isAvisos()) {
             String html = emailTemplateService.wrap(asunto,
                     "<p style=\"margin:0 0 10px 0;\">" + mensaje + "</p>");
             emailService.sendEmail(usuario.getEmail(), asunto, html);

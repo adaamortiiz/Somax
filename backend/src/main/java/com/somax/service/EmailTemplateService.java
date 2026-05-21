@@ -27,7 +27,6 @@ public class EmailTemplateService {
                     <div style="background:linear-gradient(135deg,#2f80ff,#61a6ff);border-radius:16px 16px 0 0;padding:18px 20px;">
                       <div style="display:flex;align-items:center;gap:12px;">
                         <img src="%s" alt="Somax" style="height:40px;width:auto;display:block;" />
-                        <div style="color:#ffffff;font-size:16px;font-weight:800;letter-spacing:0.08em;">SOMAX</div>
                       </div>
                     </div>
 
