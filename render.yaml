@@ -34,3 +34,11 @@ services:
 
       - key: MAIL_FROM_NAME
         value: Somax
+
+      - key: RESEND_API_KEY
+        sync: false
+
+      # Importante: el "from" debe estar verificado en Resend. Para pruebas:
+      # RESEND_FROM=Somax <onboarding@resend.dev>
+      - key: RESEND_FROM
+        sync: false

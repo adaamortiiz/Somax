@@ -12,19 +12,21 @@ public class EmailTemplateService {
     /**
      * Envuelve un cuerpo HTML con un template corporativo.
      *
-     * <p>Incluye el logo inline con CID: {@code cid:somaxLogo}.</p>
+     * <p>Incluye logo por URL absoluta (compatible con Resend).</p>
      */
     public String wrap(String title, String bodyHtml) {
         String safeTitle = escape(title);
         String year = String.valueOf(Year.now().getValue());
         String base = frontendBaseUrl != null ? frontendBaseUrl : "";
+        String logoUrl = base.endsWith("/") ? base + "img/logo-blanco-sin-bg.png"
+                : base + "/img/logo-blanco-sin-bg.png";
 
         return """
                 <div style="margin:0;padding:0;background:#0b0d10;">
                   <div style="margin:0 auto;max-width:680px;padding:28px 12px;font-family:Arial,Helvetica,sans-serif;">
                     <div style="background:linear-gradient(135deg,#2f80ff,#61a6ff);border-radius:16px 16px 0 0;padding:18px 20px;">
                       <div style="display:flex;align-items:center;gap:12px;">
-                        <img src="cid:somaxLogo" alt="Somax" style="height:40px;width:auto;display:block;" />
+                        <img src="%s" alt="Somax" style="height:40px;width:auto;display:block;" />
                         <div style="color:#ffffff;font-size:16px;font-weight:800;letter-spacing:0.08em;">SOMAX</div>
                       </div>
                     </div>
@@ -46,7 +48,7 @@ public class EmailTemplateService {
                   </div>
                 </div>
                 """
-                .formatted(safeTitle, bodyHtml, year, escapeUrl(base));
+                .formatted(escapeUrl(logoUrl), safeTitle, bodyHtml, year, escapeUrl(base));
     }
 
     public String button(String href, String label) {
@@ -73,4 +75,3 @@ public class EmailTemplateService {
         return value.replace("\"", "%22");
     }
 }
-
