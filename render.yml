@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: somax
+    env: docker
+    plan: free
+
+    envVars:
+      - key: APP_FRONTEND_BASE_URL
+        sync: false
+
+      - key: APP_JWT_SECRET
+        sync: false
+
+      - key: APP_STACKAI_API_KEY
+        sync: false
+
+      - key: APP_STACKAI_WORKFLOW_ID
+        sync: false
+
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+
+      - key: SMTP_PORT
+        value: "587"
+
+      - key: SMTP_USER
+        value: adamortiz0808@gmail.com
+
+      - key: SMTP_PASS
+        sync: false
+
+      - key: MAIL_FROM_EMAIL
+        value: adamortiz0808@gmail.com
+
+      - key: MAIL_FROM_NAME
+        value: Somax
+
+      - key: RESEND_API_KEY
+        sync: false
+
+      # Importante: el "from" debe estar verificado en Resend. Para pruebas:
+      # RESEND_FROM=Somax <onboarding@resend.dev>
+      - key: RESEND_FROM
+        sync: false
