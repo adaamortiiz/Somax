@@ -48,6 +48,20 @@ async function loadAsistencia(horarioId) {
   return await response.json();
 }
 
+function attendanceBadgeHtml(isConfirmed) {
+  if (isConfirmed) {
+    return '<i class="fa-solid fa-circle-check"></i> Asistencia confirmada';
+  }
+  return '<i class="fa-solid fa-circle-question"></i> Pendiente';
+}
+
+function attendanceButtonHtml(isConfirmed) {
+  if (isConfirmed) {
+    return '<i class="fa-solid fa-rotate me-1"></i>Marcar como pendiente';
+  }
+  return '<i class="fa-solid fa-check me-1"></i>Confirmar asistencia';
+}
+
 function renderAsistencia(asistencia) {
   if (!staffAttendanceList) return;
   if (!asistencia || asistencia.length === 0) {
@@ -55,20 +69,39 @@ function renderAsistencia(asistencia) {
       '<p class="text-muted mb-0">Sin asistentes registrados.</p>';
     return;
   }
+
   staffAttendanceList.innerHTML = asistencia
     .map(
       item => `
-      <div class="d-flex justify-content-between align-items-center border-bottom border-secondary-subtle py-2">
+      <div class="attendance-row border-bottom border-secondary-subtle py-2">
         <div>
-          <strong>${item.nombre}</strong>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <strong>${item.nombre}</strong>
+            <span class="attendance-badge ${
+              item.asistenciaConfirmada
+                ? 'attendance-badge--confirmed'
+                : 'attendance-badge--pending'
+            }">${attendanceBadgeHtml(item.asistenciaConfirmada)}</span>
+          </div>
           <div class="text-muted small">${item.email}</div>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
-          <span class="tag">${item.telefono || 'Sin teléfono'}</span>
-          <button class="btn btn-sm ${item.asistenciaConfirmada ? 'btn-accent' : 'btn-outline-light'}"
-            data-action="toggle-asistencia" data-id="${item.reservaId}" data-value="${item.asistenciaConfirmada}">
-            ${item.asistenciaConfirmada ? 'Asiste' : 'No confirmado'}
-          </button>
+          <span class="tag">
+            <i class="fa-solid fa-phone me-1"></i>${
+              item.telefono || 'Sin teléfono'
+            }
+          </span>
+          <button
+            class="btn btn-sm attendance-toggle ${
+              item.asistenciaConfirmada
+                ? 'attendance-toggle--confirmed'
+                : 'attendance-toggle--pending'
+            }"
+            data-action="toggle-asistencia"
+            data-id="${item.reservaId}"
+            data-value="${item.asistenciaConfirmada}"
+            type="button"
+          >${attendanceButtonHtml(item.asistenciaConfirmada)}</button>
         </div>
       </div>
     `
@@ -98,7 +131,9 @@ async function init() {
       headerToolbar: {
         left: isMobile ? 'prev,next' : 'prev,next today',
         center: 'title',
-        right: isMobile ? 'listWeek,dayGridMonth' : 'dayGridMonth,timeGridWeek,timeGridDay',
+        right: isMobile
+          ? 'listWeek,dayGridMonth'
+          : 'dayGridMonth,timeGridWeek,timeGridDay',
       },
       nowIndicator: true,
       eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
@@ -136,6 +171,7 @@ async function init() {
     if (!btn) return;
     const reservaId = btn.dataset.id;
     const current = btn.dataset.value === 'true';
+
     const response = await authFetch(
       `/api/reservas/staff/reservas/${reservaId}/asistencia`,
       {
@@ -145,10 +181,19 @@ async function init() {
     );
     if (!response.ok) return;
     const updated = await response.json();
+
     btn.dataset.value = String(updated.asistenciaConfirmada);
-    btn.classList.toggle('btn-accent', updated.asistenciaConfirmada);
-    btn.classList.toggle('btn-outline-light', !updated.asistenciaConfirmada);
-    btn.textContent = updated.asistenciaConfirmada ? 'Asiste' : 'No confirmado';
+    btn.classList.toggle('attendance-toggle--confirmed', updated.asistenciaConfirmada);
+    btn.classList.toggle('attendance-toggle--pending', !updated.asistenciaConfirmada);
+    btn.innerHTML = attendanceButtonHtml(updated.asistenciaConfirmada);
+
+    const row = btn.closest('.attendance-row');
+    const badge = row?.querySelector('.attendance-badge');
+    if (badge) {
+      badge.classList.toggle('attendance-badge--confirmed', updated.asistenciaConfirmada);
+      badge.classList.toggle('attendance-badge--pending', !updated.asistenciaConfirmada);
+      badge.innerHTML = attendanceBadgeHtml(updated.asistenciaConfirmada);
+    }
   });
 
   setInterval(async () => {
@@ -158,3 +203,4 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+

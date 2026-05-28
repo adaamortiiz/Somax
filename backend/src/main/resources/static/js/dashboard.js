@@ -68,6 +68,13 @@ function renderAforoPill(estado) {
   return 'state-available';
 }
 
+function formatAforoLabel(estado) {
+  if (!estado) {
+    return '';
+  }
+  return String(estado).replaceAll('_', ' ');
+}
+
 async function loadSchedules() {
   if (!scheduleList) {
     return;
@@ -94,7 +101,7 @@ async function loadSchedules() {
                     <small class="text-muted">${formatDateTime(item.fechaHoraInicio)} · ${item.sala}</small>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <span class="state-pill ${renderAforoPill(item.estadoAforo)}">${item.estadoAforo}</span>
+                    <span class="state-pill ${renderAforoPill(item.estadoAforo)}">${formatAforoLabel(item.estadoAforo)}</span>
                     ${
                       reservado
                         ? '<span class="tag">Reservada</span>'
