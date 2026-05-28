@@ -73,6 +73,48 @@ function logout() {
   window.location.href = '/login';
 }
 
+function ensureToastContainer() {
+  let container = document.getElementById('somax-toast-container');
+  if (container) {
+    return container;
+  }
+  container = document.createElement('div');
+  container.id = 'somax-toast-container';
+  container.className = 'somax-toast-container';
+  document.body.appendChild(container);
+  return container;
+}
+
+function showToast(message, variant = 'success') {
+  const container = ensureToastContainer();
+  const toast = document.createElement('div');
+  toast.className = `somax-toast somax-toast--${variant}`;
+
+  const icon =
+    variant === 'success'
+      ? 'fa-circle-check'
+      : variant === 'warning'
+        ? 'fa-triangle-exclamation'
+        : 'fa-circle-xmark';
+
+  toast.innerHTML = `
+    <div class="somax-toast__icon"><i class="fa-solid ${icon}"></i></div>
+    <div class="somax-toast__body">${message}</div>
+    <button class="somax-toast__close" type="button" aria-label="Cerrar">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  `;
+
+  const remove = () => {
+    toast.classList.add('is-hiding');
+    window.setTimeout(() => toast.remove(), 220);
+  };
+
+  toast.querySelector('.somax-toast__close')?.addEventListener('click', remove);
+  container.appendChild(toast);
+  window.setTimeout(remove, 3500);
+}
+
 function ensureFontAwesome() {
   if (document.getElementById('somax-fontawesome')) {
     return;

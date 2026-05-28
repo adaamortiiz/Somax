@@ -143,7 +143,12 @@ async function loadClasses() {
             <input class="form-control form-control-sm" data-class-field="descripcion" data-id="${c.id}" value="${(c.descripcion || '').replace(/\"/g,'&quot;')}" />
           </td>
           <td style="min-width:160px">
-            <button class="btn btn-sm btn-accent" data-action="save-class" data-id="${c.id}">Guardar</button>
+            <div class="d-flex gap-2 flex-wrap justify-content-end">
+              <button class="btn btn-sm btn-accent" data-action="save-class" data-id="${c.id}">Guardar</button>
+              <button class="btn btn-sm btn-outline-light" data-action="delete-class" data-id="${c.id}">
+                <i class="fa-solid fa-trash me-1"></i>Borrar
+              </button>
+            </div>
           </td>
         </tr>
       `;
@@ -187,7 +192,12 @@ async function loadAdminSchedules() {
           <input type="number" min="1" class="form-control form-control-sm" data-h-field="aforoMaximo" data-id="${h.id}" value="${h.aforoMaximo ?? ''}" placeholder="(Clase)" />
         </td>
         <td style="min-width:140px">
-          <button class="btn btn-sm btn-accent" data-action="save-horario" data-id="${h.id}">Guardar</button>
+          <div class="d-flex gap-2 flex-wrap justify-content-end">
+            <button class="btn btn-sm btn-accent" data-action="save-horario" data-id="${h.id}">Guardar</button>
+            <button class="btn btn-sm btn-outline-light" data-action="delete-horario" data-id="${h.id}">
+              <i class="fa-solid fa-trash me-1"></i>Borrar
+            </button>
+          </div>
         </td>
       </tr>
     `;
@@ -244,6 +254,7 @@ usersTable?.addEventListener('click', async event => {
     body: JSON.stringify({ nombre, email, telefono, rol, activo, password }),
   });
 
+  showToast('Usuario actualizado.', 'success');
   loadUsers();
 });
 
@@ -268,9 +279,11 @@ classForm?.addEventListener('submit', async event => {
     loadClasses();
     loadAdminSchedules();
     if (classFormMessage) classFormMessage.textContent = 'Clase guardada.';
+    showToast('Clase guardada correctamente.', 'success');
   } else {
     const err = await response.json().catch(() => null);
     if (classFormMessage) classFormMessage.textContent = err?.message || 'Error guardando clase.';
+    showToast(err?.message || 'Error guardando clase.', 'error');
   }
 });
 
@@ -295,16 +308,36 @@ scheduleForm?.addEventListener('submit', async event => {
     scheduleForm.reset();
     loadAdminSchedules();
     if (scheduleFormMessage) scheduleFormMessage.textContent = 'Horario guardado.';
+    showToast('Horario guardado correctamente.', 'success');
   } else {
     const err = await response.json().catch(() => null);
     if (scheduleFormMessage) scheduleFormMessage.textContent = err?.message || 'Error guardando horario.';
+    showToast(err?.message || 'Error guardando horario.', 'error');
   }
 });
 
 classListAdmin?.addEventListener('click', async event => {
-  const btn = event.target.closest("button[data-action='save-class']");
+  const saveBtn = event.target.closest("button[data-action='save-class']");
+  const deleteBtn = event.target.closest("button[data-action='delete-class']");
+  const btn = saveBtn || deleteBtn;
   if (!btn) return;
   const id = btn.dataset.id;
+
+  if (deleteBtn) {
+    const ok = confirm('¿Seguro que quieres borrar esta clase? Se eliminarán también sus horarios.');
+    if (!ok) return;
+    const response = await authFetch(`/api/admin/clases/${id}`, { method: 'DELETE' });
+    if (response.ok) {
+      showToast('Clase eliminada.', 'success');
+      loadClasses();
+      loadAdminSchedules();
+    } else {
+      const err = await response.json().catch(() => null);
+      showToast(err?.message || 'Error eliminando clase.', 'error');
+    }
+    return;
+  }
+
   const get = field => classListAdmin.querySelector(`[data-class-field='${field}'][data-id='${id}']`);
   const payload = {
     nombre: get('nombre')?.value?.trim(),
@@ -317,13 +350,34 @@ classListAdmin?.addEventListener('click', async event => {
   const response = await authFetch(`/api/admin/clases/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
   if (response.ok) {
     loadClasses();
+    showToast('Clase actualizada.', 'success');
+  } else {
+    const err = await response.json().catch(() => null);
+    showToast(err?.message || 'Error actualizando clase.', 'error');
   }
 });
 
 scheduleListAdmin?.addEventListener('click', async event => {
-  const btn = event.target.closest("button[data-action='save-horario']");
+  const saveBtn = event.target.closest("button[data-action='save-horario']");
+  const deleteBtn = event.target.closest("button[data-action='delete-horario']");
+  const btn = saveBtn || deleteBtn;
   if (!btn) return;
   const id = btn.dataset.id;
+
+  if (deleteBtn) {
+    const ok = confirm('¿Seguro que quieres borrar este horario? Se eliminarán también sus reservas.');
+    if (!ok) return;
+    const response = await authFetch(`/api/admin/horarios/${id}`, { method: 'DELETE' });
+    if (response.ok) {
+      showToast('Horario eliminado.', 'success');
+      loadAdminSchedules();
+    } else {
+      const err = await response.json().catch(() => null);
+      showToast(err?.message || 'Error eliminando horario.', 'error');
+    }
+    return;
+  }
+
   const get = field => scheduleListAdmin.querySelector(`[data-h-field='${field}'][data-id='${id}']`);
   const monitorId = get('monitorId')?.value;
   const payload = {
@@ -338,9 +392,10 @@ scheduleListAdmin?.addEventListener('click', async event => {
   const response = await authFetch(`/api/admin/horarios/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
   if (response.ok) {
     loadAdminSchedules();
+    showToast('Horario actualizado.', 'success');
   } else {
     const err = await response.json().catch(() => null);
-    alert(err?.message || 'Error actualizando horario');
+    showToast(err?.message || 'Error actualizando horario', 'error');
   }
 });
 
