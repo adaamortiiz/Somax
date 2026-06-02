@@ -11,8 +11,11 @@ import com.somax.repository.ClaseDirigidaRepository;
 import com.somax.repository.HorarioRepository;
 import com.somax.repository.NotificacionRepository;
 import com.somax.repository.UsuarioRepository;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -50,21 +53,30 @@ public class DataInitializer implements CommandLineRunner {
         ClaseDirigida spinning;
 
         if (claseRepository.count() == 0) {
-            zumba = ClaseDirigida.builder().nombre("Zumba").descripcion(
-                            "Clase intensa de cardio con ritmos latinos y coreografías guiadas.")
-                    .nivel(NivelClase.BASICO).aforoMaximo(16).privada(false)
+            zumba = ClaseDirigida.builder()
+                    .nombre("Zumba")
+                    .descripcion("Clase intensa de cardio con ritmos latinos y coreografias guiadas.")
+                    .nivel(NivelClase.BASICO)
+                    .aforoMaximo(16)
+                    .privada(false)
                     .imagenUrl("https://images.unsplash.com/photo-1517836357463-d25dfeac3438")
                     .build();
 
-            pilates = ClaseDirigida.builder().nombre("Pilates").descripcion(
-                            "Trabajo de fuerza y control postural con enfoque en core y respiración.")
-                    .nivel(NivelClase.INTERMEDIO).aforoMaximo(12).privada(false)
+            pilates = ClaseDirigida.builder()
+                    .nombre("Pilates")
+                    .descripcion("Trabajo de fuerza y control postural con enfoque en core y respiracion.")
+                    .nivel(NivelClase.INTERMEDIO)
+                    .aforoMaximo(12)
+                    .privada(false)
                     .imagenUrl("https://images.unsplash.com/photo-1518611012118-696072aa579a")
                     .build();
 
-            spinning = ClaseDirigida.builder().nombre("Spinning").descripcion(
-                            "Sesión de bicicleta indoor con intervalos y música enérgica.")
-                    .nivel(NivelClase.AVANZADO).aforoMaximo(20).privada(false)
+            spinning = ClaseDirigida.builder()
+                    .nombre("Spinning")
+                    .descripcion("Sesion de bicicleta indoor con intervalos y musica energica.")
+                    .nivel(NivelClase.AVANZADO)
+                    .aforoMaximo(20)
+                    .privada(false)
                     .imagenUrl("https://images.unsplash.com/photo-1517960413843-0aee8e2b3285")
                     .build();
 
@@ -79,79 +91,21 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        LocalDateTime base = LocalDateTime.now().withSecond(0).withNano(0);
-        List<Horario> nuevos = new java.util.ArrayList<>();
+        YearMonth currentMonth = YearMonth.now();
+        LocalDate firstDay = currentMonth.atDay(1);
+        LocalDate lastDay = currentMonth.atEndOfMonth();
 
-        boolean hasUpcoming = !horarioRepository.findUpcomingWithClaseAndMonitor(LocalDateTime.now())
-                .isEmpty();
-
-        // Sembrado de ejemplo: 8 semanas (~2 meses), 3 clases por semana.
-        // Solo lo hacemos si no hay datos (para evitar duplicados en cada arranque).
-        if (!hasUpcoming) {
-            for (int week = 0; week < 8; week++) {
-                LocalDateTime w = base.plusWeeks(week);
-
-                nuevos.add(Horario.builder().clase(zumba).monitor(staff)
-                        .fechaHoraInicio(w.plusDays(1).withHour(10).withMinute(0))
-                        .duracion(50).sala("Sala 1").aforoMaximo(12).build());
-
-                nuevos.add(Horario.builder().clase(pilates).monitor(staff)
-                        .fechaHoraInicio(w.plusDays(3).withHour(18).withMinute(0))
-                        .duracion(60).sala("Sala 2").aforoMaximo(10).build());
-
-                nuevos.add(Horario.builder().clase(spinning).monitor(staff)
-                        .fechaHoraInicio(w.plusDays(5).withHour(9).withMinute(30))
-                        .duracion(45).sala("Sala 3").aforoMaximo(15).build());
+        List<Horario> nuevos = new ArrayList<>();
+        for (LocalDate day = firstDay; !day.isAfter(lastDay); day = day.plusDays(1)) {
+            if (isClosedDay(day)) {
+                continue;
             }
-        }
 
-        // Semana del 1 de junio: concentramos más horarios en un mismo día para
-        // probar densidad del calendario (muchos eventos el mismo día).
-        LocalDate june1 = LocalDate.of(base.getYear(), 6, 1);
-        if (june1.isBefore(base.toLocalDate())) {
-            june1 = june1.plusYears(1);
-        }
-        LocalDate busyDate = june1.plusDays(2); // miércoles de esa semana
+            addBaseDaySchedules(nuevos, day, zumba, pilates, spinning, staff);
 
-        if (!horarioRepository.existsSameSalaAndStart("Sala 1", busyDate.atTime(8, 30))) {
-            nuevos.add(Horario.builder().clase(zumba).monitor(staff)
-                    .fechaHoraInicio(busyDate.atTime(8, 30))
-                    .duracion(50).sala("Sala 1").aforoMaximo(12).build());
-        }
-        if (!horarioRepository.existsSameSalaAndStart("Sala 2", busyDate.atTime(9, 30))) {
-            nuevos.add(Horario.builder().clase(pilates).monitor(staff)
-                    .fechaHoraInicio(busyDate.atTime(9, 30))
-                    .duracion(60).sala("Sala 2").aforoMaximo(10).build());
-        }
-        if (!horarioRepository.existsSameSalaAndStart("Sala 3", busyDate.atTime(10, 30))) {
-            nuevos.add(Horario.builder().clase(spinning).monitor(staff)
-                    .fechaHoraInicio(busyDate.atTime(10, 30))
-                    .duracion(45).sala("Sala 3").aforoMaximo(15).build());
-        }
-        if (!horarioRepository.existsSameSalaAndStart("Sala 4", busyDate.atTime(11, 45))) {
-            nuevos.add(Horario.builder().clase(zumba).monitor(staff)
-                    .fechaHoraInicio(busyDate.atTime(11, 45))
-                    .duracion(50).sala("Sala 4").aforoMaximo(12).build());
-        }
-        if (!horarioRepository.existsSameSalaAndStart("Sala 2", busyDate.atTime(16, 30))) {
-            nuevos.add(Horario.builder().clase(pilates).monitor(staff)
-                    .fechaHoraInicio(busyDate.atTime(16, 30))
-                    .duracion(60).sala("Sala 2").aforoMaximo(10).build());
-        }
-        if (!horarioRepository.existsSameSalaAndStart("Sala 3", busyDate.atTime(17, 30))) {
-            nuevos.add(Horario.builder().clase(spinning).monitor(staff)
-                    .fechaHoraInicio(busyDate.atTime(17, 30))
-                    .duracion(45).sala("Sala 3").aforoMaximo(15).build());
-        }
-        if (!horarioRepository.existsSameSalaAndStart("Sala 1", busyDate.atTime(18, 30))) {
-            nuevos.add(Horario.builder().clase(zumba).monitor(staff)
-                    .fechaHoraInicio(busyDate.atTime(18, 30))
-                    .duracion(50).sala("Sala 1").aforoMaximo(12).build());
-        }
-        if (!horarioRepository.existsSameSalaAndStart("Sala 4", busyDate.atTime(19, 45))) {
-            nuevos.add(Horario.builder().clase(pilates).monitor(staff)
-                    .fechaHoraInicio(busyDate.atTime(19, 45))
-                    .duracion(60).sala("Sala 4").aforoMaximo(10).build());
+            if (isPeakDay(day)) {
+                addPeakDaySchedules(nuevos, day, zumba, pilates, spinning, staff);
+            }
         }
 
         if (!nuevos.isEmpty()) {
@@ -159,13 +113,82 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
+    private boolean isClosedDay(LocalDate day) {
+        return day.getDayOfWeek() == DayOfWeek.SUNDAY;
+    }
+
+    private boolean isPeakDay(LocalDate day) {
+        DayOfWeek dow = day.getDayOfWeek();
+        return dow == DayOfWeek.MONDAY || dow == DayOfWeek.WEDNESDAY
+                || dow == DayOfWeek.FRIDAY;
+    }
+
+    private void addBaseDaySchedules(List<Horario> nuevos, LocalDate day, ClaseDirigida zumba,
+            ClaseDirigida pilates, ClaseDirigida spinning, Usuario staff) {
+        DayOfWeek dow = day.getDayOfWeek();
+
+        if (dow == DayOfWeek.MONDAY || dow == DayOfWeek.WEDNESDAY || dow == DayOfWeek.FRIDAY) {
+            addHorarioIfMissing(nuevos, zumba, staff, day.atTime(9, 0), 50, "Sala 1", 12);
+            addHorarioIfMissing(nuevos, pilates, staff, day.atTime(18, 0), 60, "Sala 2", 10);
+            addHorarioIfMissing(nuevos, spinning, staff, day.atTime(19, 15), 45, "Sala 3", 15);
+            return;
+        }
+
+        if (dow == DayOfWeek.TUESDAY || dow == DayOfWeek.THURSDAY) {
+            addHorarioIfMissing(nuevos, pilates, staff, day.atTime(10, 0), 60, "Sala 2", 10);
+            addHorarioIfMissing(nuevos, zumba, staff, day.atTime(17, 30), 50, "Sala 1", 12);
+            addHorarioIfMissing(nuevos, spinning, staff, day.atTime(19, 0), 45, "Sala 3", 15);
+            return;
+        }
+
+        if (dow == DayOfWeek.SATURDAY) {
+            addHorarioIfMissing(nuevos, spinning, staff, day.atTime(9, 30), 45, "Sala 3", 15);
+            addHorarioIfMissing(nuevos, zumba, staff, day.atTime(11, 0), 50, "Sala 1", 12);
+            addHorarioIfMissing(nuevos, pilates, staff, day.atTime(12, 15), 60, "Sala 2", 10);
+        }
+    }
+
+    private void addPeakDaySchedules(List<Horario> nuevos, LocalDate day, ClaseDirigida zumba,
+            ClaseDirigida pilates, ClaseDirigida spinning, Usuario staff) {
+        addHorarioIfMissing(nuevos, spinning, staff, day.atTime(7, 30), 45, "Sala 3", 15);
+        addHorarioIfMissing(nuevos, zumba, staff, day.atTime(8, 30), 50, "Sala 4", 12);
+        addHorarioIfMissing(nuevos, pilates, staff, day.atTime(15, 30), 60, "Sala 2", 10);
+        addHorarioIfMissing(nuevos, zumba, staff, day.atTime(16, 45), 50, "Sala 1", 12);
+    }
+
+    private void addHorarioIfMissing(List<Horario> nuevos, ClaseDirigida clase, Usuario staff,
+            LocalDateTime start, int duracion, String sala, Integer aforoMaximo) {
+        if (horarioRepository.existsSameSalaAndStart(sala, start)) {
+            return;
+        }
+
+        nuevos.add(Horario.builder()
+                .clase(clase)
+                .monitor(staff)
+                .fechaHoraInicio(start)
+                .duracion(duracion)
+                .sala(sala)
+                .aforoMaximo(aforoMaximo)
+                .build());
+    }
+
     private Usuario buildUser(String nombre, String email, String telefono, Role role,
             boolean activo) {
-        Usuario usuario = Usuario.builder().nombre(nombre).email(email).telefono(telefono)
-                .password(passwordEncoder.encode("Somax123")).rol(role).activo(activo).build();
+        Usuario usuario = Usuario.builder()
+                .nombre(nombre)
+                .email(email)
+                .telefono(telefono)
+                .password(passwordEncoder.encode("Somax123"))
+                .rol(role)
+                .activo(activo)
+                .build();
 
-        Preferencias preferencias = Preferencias.builder().idioma("es")
-                .canalNotificacion(CanalNotificacion.EMAIL).avisos(true).usuario(usuario).build();
+        Preferencias preferencias = Preferencias.builder()
+                .idioma("es")
+                .canalNotificacion(CanalNotificacion.EMAIL)
+                .avisos(true)
+                .usuario(usuario)
+                .build();
         usuario.setPreferencias(preferencias);
         return usuario;
     }
